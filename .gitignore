@@ -1,0 +1,5 @@
+**.swp
+__pycache__
+venv
+.DS_Store
+mov_test_240_fps
