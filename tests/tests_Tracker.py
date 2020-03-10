@@ -7,8 +7,6 @@ del path
 
 import unittest
 from Lifi.TargetTracker import TargetTracker, TargetHistory
-from dummy_sequence import dummy_history
-
 
 class TestTargetTracker(unittest.TestCase):
 

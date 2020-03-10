@@ -1,5 +1,6 @@
 import cv2
 
+from Lifi.HistoryInterpreter import HistoryInterpreter
 from Lifi.ShapeDetector import ShapeDetector
 from Lifi.CvHelpers import *
 
@@ -127,10 +128,12 @@ class TargetHistory():
         # [
         #   {last_pos: (x, y, w, h),
         #    last_frame: 1,
+        #    history_interpreter: <HI obj>,
         #    history: [r g b]},
         #
         #   {last_pos: (x, y, w, h),
         #    last_frame: 1,
+        #    history_interpreter: <HI obj>,
         #    history: [r g b]},
         #
         #   ...
@@ -183,11 +186,16 @@ class TargetHistory():
     def _create_history_entry(self, detected, box): 
         return {"last_pos": box,
                 "last_frame": self.frame,
+                "history_interpreter": HistoryInterpreter()
                 "history":[detected]}
 
     def _update_history_entry(self, entry, detected, box):
+
+        entry["history_interpreter"].process(detected)
+
         return {"last_pos": box,
                 "last_frame": self.frame,
+                "history_interpreter": entry["history_interpreter"],
                 "history": entry["history"] + [detected]}
     
     def __str__(self):

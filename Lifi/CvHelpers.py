@@ -59,3 +59,10 @@ def calculate_iou(boxA, boxB):
     iou = interArea / float(boxAArea + boxBArea - interArea)
     # return the intersection over union value
     return iou
+
+def bin_list_to_int(bin_list):
+    return int("".join(str(x) for x in bin_list), 2)
+
+def argmax(l):
+    f = lambda i: l[i]
+    return max(range(len(l)), key=f)

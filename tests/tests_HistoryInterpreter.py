@@ -7,10 +7,9 @@ del path
 
 import unittest
 from Lifi.HistoryInterpreter import HistoryInterpreter
-from dummy_sequence import dummy_history
+from tests.dummy_sequence import dummy_history
 
-
-class TestTargetTracker(unittest.TestCase):
+class TestHistoryInterpreter(unittest.TestCase):
 
     def setUp(self):
         self.hi = HistoryInterpreter()
@@ -18,13 +17,14 @@ class TestTargetTracker(unittest.TestCase):
     def test_process_clean(self):
         test = ["green", "green", 
                 "blue", "blue", "blue", "blue", 
+                "red", "red", "red", "red",
                 "green", "green", "green", "green",
                 "red", "red", "red", "red",
                 "blue", "blue", "blue", "blue", 
                ]
-        expected = [0, 1]
+        expected = [1, 0, 1]
         
-        self.hi.process(test)
+        self.hi.process_batch(test)
         self.assertEqual(self.hi.output, expected)
     
     def test_process_missed_frame(self):
@@ -36,7 +36,7 @@ class TestTargetTracker(unittest.TestCase):
                ]
         expected = [0, 1]
         
-        self.hi.process(test)
+        self.hi.process_batch(test)
         self.assertEqual(self.hi.output, expected)
     
     def test_process_flipped_frame(self):
@@ -48,7 +48,7 @@ class TestTargetTracker(unittest.TestCase):
                ]
         expected = [0, 1]
         
-        self.hi.process(test)
+        self.hi.process_batch(test)
         self.assertEqual(self.hi.output, expected)
     
     def test_process_extra_frame(self):
@@ -60,7 +60,7 @@ class TestTargetTracker(unittest.TestCase):
                ]
         expected = [0, 1]
         
-        self.hi.process(test)
+        self.hi.process_batch(test)
         self.assertEqual(self.hi.output, expected)
     
     def test_process_unexpected_sentinel(self):
@@ -72,7 +72,7 @@ class TestTargetTracker(unittest.TestCase):
                ]
         expected = [0, 1]
         
-        self.hi.process(test)
+        self.hi.process_batch(test)
         self.assertEqual(self.hi.output, expected)
         
     def test_process_unexpected_sentinel2(self):
@@ -85,8 +85,36 @@ class TestTargetTracker(unittest.TestCase):
                ]
         
         expected = [0, 1]
-        self.hi.process(test)
+        self.hi.process_batch(test)
         self.assertEqual(self.hi.output, expected)
+    
+    def test_pop_output(self):
+        self.hi.output = []
+        test = ["green", "green", 
+                "blue", "blue", "blue", "blue", 
+                "green", "green", "green", "blue", # Extra frame here
+                "red", "red", "red", "red",
+                "blue", "blue", "blue", "blue", 
+               ]
+        
+        expected = [0, 1]
+        self.hi.process_batch(test)
+        self.assertEqual(self.hi.pop_output(), expected)
+        self.assertEqual(self.hi.output, [])
+    
+    def test_change_to_detected(self):
+        self.hi.output = []
+        test = ["green", "green", 
+                "blue", "blue", "blue", "blue", 
+                "green", "green", "green", "blue", # Extra frame here
+                "red", "red", "red", "red",
+                "blue", "blue", "blue", "red", 
+               ]
+        
+        expected = [0, 1]
+        self.hi.process_batch(test)
+        self.assertEqual(self.hi.pop_output(), expected)
+        self.assertEqual(self.hi.state, HistoryInterpreter.DETECTED)
 
 
 if __name__ == '__main__':
