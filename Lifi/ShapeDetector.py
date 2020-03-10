@@ -6,6 +6,7 @@ class ShapeDetector:
     def detect(self, c):
         # initialize the shape name and approximate the contour
         shape = "unidentified"
+        box = None
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.04 * peri, True)
 
@@ -17,7 +18,8 @@ class ShapeDetector:
         elif len(approx) == 4:
             # compute the bounding box of the contour and use the
             # bounding box to compute the aspect ratio
-            (x, y, w, h) = cv2.boundingRect(approx)
+            box = cv2.boundingRect(approx)
+            (x, y, w, h) = box
             ar = w / float(h)
             # a square will have an aspect ratio that is approximately
             # equal to one, otherwise, the shape is a rectangle
@@ -36,4 +38,4 @@ class ShapeDetector:
             shape = "circle"
         
         # return the name of the shape
-        return shape
+        return shape, box
