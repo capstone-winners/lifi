@@ -1,7 +1,7 @@
 import cv2
 
-from ShapeDetector import ShapeDetector
-from CvHelpers import *
+from Lifi.ShapeDetector import ShapeDetector
+from Lifi.CvHelpers import *
 
 class TargetTracker:
 
@@ -42,7 +42,7 @@ class TargetTracker:
             detected, box = tracker.track(frame, markup_frame)
             tracker.show_mask()
             if detected:
-                print("{}\t{}".format(tracker.name, box))
+                #print("{}\t{}".format(tracker.name, box))
                 self.history.add_to_history(detected, box)
 
         return markup_frame
@@ -94,7 +94,7 @@ class ColorDetector:
                     self._update_markup_frame(markup, c, shape, box)
                 return self.name, box
 
-        return False, box
+        return False, None
     
     def _update_markup_frame(self, markup_frame, c, shape, box):
         x, y, _, _ = box
@@ -149,6 +149,8 @@ class TargetHistory():
         # If the history is empty, just add this one in. 
         if len(self.history) == 0:
             self.history.append(self._create_history_entry(detected,box))
+            # Increment the frame count and wrap at the max_frames_to_live.
+            self.frame = (self.frame + 1) % self.max_frames_to_live
             return
 
         # Determine what entry has the minimum distance to the new box.
@@ -175,7 +177,7 @@ class TargetHistory():
         self.frame = (self.frame + 1) % self.max_frames_to_live
         
         # Remove any entries which we haven't seen since the frame wrap around.
-        self.history = list(filter(lambda entry: entry["last_frame"] == self.frame, 
+        self.history = list(filter(lambda entry: entry["last_frame"] != self.frame, 
                 self.history))
 
     def _create_history_entry(self, detected, box): 
@@ -186,7 +188,7 @@ class TargetHistory():
     def _update_history_entry(self, entry, detected, box):
         return {"last_pos": box,
                 "last_frame": self.frame,
-                "history": [entry["history"], detected]}
+                "history": entry["history"] + [detected]}
     
     def __str__(self):
         s = ""

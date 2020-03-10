@@ -3,8 +3,15 @@ import argparse
 import time
 import cv2
 
-from TargetTracker import TargetTracker
-from CvHelpers import *
+import sys
+import os
+path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if not path in sys.path:
+    sys.path.insert(1, path)
+del path
+
+from Lifi.TargetTracker import TargetTracker
+from Lifi.CvHelpers import *
 
 def main():
     """Handles inpur from file or stream, tests the tracker class"""
@@ -17,6 +24,7 @@ def main():
     # to the webcam
     if not args.get("video", False):
         vid_stream = VideoStream(src=0).start()
+        fps = 30 
     # otherwise, grab a reference to the video file
     else:
         vid_stream = cv2.VideoCapture(args["video"])

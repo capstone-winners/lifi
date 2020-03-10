@@ -3,7 +3,6 @@
 import time
 import numpy as np
 
-
 class LifiTx:
 
     shift_frequency = 10
@@ -54,8 +53,8 @@ class LifiTx:
     def _display_color(self, rgb):
         """ Changes the entire 8x8 grid to the given color """
 
-        self.display.set_pixels(self._get_color_config(rgb))
-        self.display.show_colors()
+        self.display().set_pixels(self._get_color_config(rgb))
+        self.display().show_colors()
 
     def _frames_to_colors(self, bin_frames):
         flatten = lambda l: [item for sublist in l for item in sublist]
