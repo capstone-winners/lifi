@@ -14,6 +14,17 @@ class TestHistoryInterpreter(unittest.TestCase):
     def setUp(self):
         self.hi = HistoryInterpreter()
 
+    def test_equal(self):
+        comp = HistoryInterpreter()
+        
+        self.assertEqual(self.hi, comp)
+
+        comp.process("blue")
+        self.assertNotEqual(self.hi, comp)
+        
+        self.hi.process("blue")
+        self.assertEqual(self.hi, comp)
+
     def test_process_clean(self):
         test = ["green", "green", 
                 "blue", "blue", "blue", "blue", 

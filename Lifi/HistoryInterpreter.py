@@ -18,7 +18,7 @@ class HistoryInterpreter():
     DETECTED = 1
     PROCESSING = 2
 
-    def __init__(self):
+    def __init__(self, callback = None):
         self.sentinel_value = "blue"
         self.low_value = "green"
         self.high_value = "red"
@@ -28,7 +28,27 @@ class HistoryInterpreter():
         self.max_buffer_size = 4
 
         self.output = []
-        self.frame_complete_callback = self._frame_complete
+
+        if callback is not None:
+            self.frame_complete_callback = callback
+        else:
+            self.frame_complete_callback = self._frame_complete
+
+    def __eq__(self, other): 
+        if not isinstance(other, HistoryInterpreter):
+            # don't attempt to compare against unrelated types
+            print("[HistoryInterpreter] wrong instance type")
+            return False 
+
+        return (self.output == other.output 
+                and self.buffer == other.buffer 
+                and self.state == other.state)
+    
+    def __str__(self):
+        s = "Output: {}\n".format(self.output)
+        s += "Buffer: {}\n".format(self.buffer)
+        s += "State: {}\n".format(self.state)
+        return s
 
     def process_batch(self, history):
         for entry in history:
@@ -47,8 +67,8 @@ class HistoryInterpreter():
         self.output = []
         return temp
 
-    def _frame_complete(self):
-        print("full frame detected!")
+    def _frame_complete(self, obj = None):
+        print("[History interpretor]: full frame detected!")
         print(bin_list_to_int(self.output))
 
 
@@ -73,7 +93,7 @@ class HistoryInterpreter():
 
             if arg == 0: # This was a sentinel
                 self.state = HistoryInterpreter.DETECTED
-                self.frame_complete_callback()
+                self.frame_complete_callback(self)
             else:
                 self.output.append(int(num_high > num_low))
 

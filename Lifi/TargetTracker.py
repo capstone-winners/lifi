@@ -34,7 +34,13 @@ class TargetTracker:
 
         self.trackers = [self.greentracker, self.redtracker, self.bluetracker]
 
-        self.history = TargetHistory()
+        self.history = TargetHistory(self.complete_frame_callback)
+
+        self.fpm = 72 # The number of frames we expect each message to take
+        self.frame_count = 0
+        self.last_detected = 0
+        self.detected_frame = False
+        self.bin_message = []
 
     def track(self, frame):
         markup_frame = frame.copy()
@@ -46,8 +52,33 @@ class TargetTracker:
                 #print("{}\t{}".format(tracker.name, box))
                 self.history.add_to_history(detected, box)
 
+        self.frame_count += 1
+        if (self.frame_count - self.last_detected) % (self.fpm * 3) == 0:
+            print("resetting frame_count\n\t{}\n\t{}".format(
+                self.frame_count, 
+                self.last_detected))
+
+            self.detected_frame = False
+        self._add_message_to_frame(markup_frame)
+
         return markup_frame
 
+    def _add_message_to_frame(self, frame):
+        print(self.frame_count)
+        if self.detected_frame:
+            msg = "{}: {}".format(self.detected_frame, str(self.bin_message))
+        else:
+            msg = "No msg detected"
+        
+        cv2.putText(frame, msg, (0, int(self.height * .9)), 
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5, (255, 255, 255), 2)
+
+    def complete_frame_callback(self, interp):
+        print("[Target Tracker]: callback")
+        self.detected_frame = True
+        self.last_detected = self.frame_count
+        self.bin_message = interp.pop_output()
 
 class ColorDetector:
     """
@@ -124,7 +155,7 @@ class ColorDetector:
 
 class TargetHistory():
 
-    def __init__(self):
+    def __init__(self, callback = None):
         # [
         #   {last_pos: (x, y, w, h),
         #    last_frame: 1,
@@ -147,6 +178,15 @@ class TargetHistory():
 
         self.frame = 0
         self.max_frames_to_live = 30
+
+        
+        if callback is not None:
+            self.frame_complete_callback = callback
+        else:
+            self.frame_complete_callback = self._default_frame_complete
+
+    def configure_callback(self, callback):
+        self.frame_complete_callback = callback
 
     def add_to_history(self, detected, box):
         # If the history is empty, just add this one in. 
@@ -184,9 +224,12 @@ class TargetHistory():
                 self.history))
 
     def _create_history_entry(self, detected, box): 
+        interp = HistoryInterpreter(self.frame_complete_callback)
+        interp.max_buffer_size = 8
+        interp.process(detected)
         return {"last_pos": box,
                 "last_frame": self.frame,
-                "history_interpreter": HistoryInterpreter()
+                "history_interpreter": interp,
                 "history":[detected]}
 
     def _update_history_entry(self, entry, detected, box):
@@ -197,6 +240,9 @@ class TargetHistory():
                 "last_frame": self.frame,
                 "history_interpreter": entry["history_interpreter"],
                 "history": entry["history"] + [detected]}
+    
+    def _default_frame_complete(self, msg = None):
+        print("[TargetHistory] Frame Complete")
     
     def __str__(self):
         s = ""
