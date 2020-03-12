@@ -39,5 +39,5 @@ For the time being, this prototype is being developed on recorded videos.
     where the video is being played in Slow-Mo vs normal speed
     - Make it all one or the other. 
 3. Upload video to your computer
-4. `python Lifi/rx.py -v <path to video>`
+4. `python scripts/run_rx.py -v <path to video>`
 
