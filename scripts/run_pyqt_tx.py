@@ -86,7 +86,7 @@ class UpdaterThread(QThread):
     def run(self):
         print("running updater thread!")
         tx = LifiTx(self.window)
-        tx.run(64)
+        tx.run(69)
     
 
 if __name__ == '__main__':

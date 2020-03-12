@@ -11,6 +11,7 @@ if not path in sys.path:
 del path
 
 from Lifi.TargetTracker import TargetTracker
+from Lifi.HistoryInterpreter import history_to_pretty_str
 from Lifi.CvHelpers import *
 
 def main():
@@ -36,9 +37,12 @@ def main():
     frame = get_frame(vid_stream, stream)
     height, width = frame.shape[0], frame.shape[1]
     # Frame writer
-    out = cv2.VideoWriter('outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 
+    out = cv2.VideoWriter('outpy.mp4',cv2.VideoWriter_fourcc(*"MP4V"), 
             fps, (width,height))
     print(fps)
+
+    paused = False
+    next_frame = False
 
     # Target tracker is responsible for detecting a target within a frame
     target_tracker = TargetTracker(height, width)
@@ -46,12 +50,20 @@ def main():
     # keep looping until no more frames
     more_frames = True
     while more_frames:
-        markup_frame = target_tracker.track(frame)
-        show("frame", markup_frame)
-        out.write(markup_frame)
-        frame = get_frame(vid_stream, stream)
+        if not paused or next_frame:
+            next_frame = False
+            markup_frame = target_tracker.track(frame)
+            out.write(markup_frame)
+            frame = get_frame(vid_stream, stream)
         if frame is None:
             more_frames = False
+        
+        key =  show("frame", markup_frame)
+        if key == ord("p"):
+            print("Paused received!")
+            paused = not paused
+        if key == ord("n"):
+            next_frame = True
 
     # if we are not using a video file, stop the camera video stream
     if not args.get("video", False):
@@ -64,6 +76,8 @@ def main():
     # close all windows
     cv2.destroyAllWindows()
     print(target_tracker.history)
+    targeted_history = target_tracker.history.history[0]["history"]
+    print(history_to_pretty_str(targeted_history))
 
 
 if __name__ == '__main__':

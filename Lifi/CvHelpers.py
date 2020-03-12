@@ -23,6 +23,7 @@ def show(frame_name, frame):
     # if the 'q' key is pressed, stop the loop
     if key == ord("q"):
         exit()
+    return key
 
 def calculate_distance_center(boxA, boxB):
     cx_A = boxA[0] + (boxA[2]/2)

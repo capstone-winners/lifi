@@ -3,10 +3,14 @@
 import time
 import numpy as np
 
+from Lifi.GlobalSettings import *
+
 class LifiTx:
 
-    shift_frequency = 10
-    tx_frequency = 30
+    #shift_frequency = 30
+    #tx_frequency = 30
+    shift_frequency = TX_FREQ
+    tx_frequency = TX_FREQ
     color_dict = {
             "red": (255, 0, 0),
             "green": (0, 255, 0),
@@ -18,8 +22,11 @@ class LifiTx:
 
     def run(self, my_msg):
         """ my_msg is an integer greater than 0"""
+        print(my_msg)
         bin_msg = LifiMsgEncoder.msg_to_frame(my_msg)
+        print(bin_msg)
         color_sequence = self._frames_to_colors(bin_msg)
+        print(color_sequence)
         
         while(True):
             for color in color_sequence:
@@ -84,7 +91,9 @@ class LifiMsgEncoder:
             + msg_chunk \
             + LifiMsgEncoder._calculate_parity(msg_chunk)
 
-        return [helper(chunk) for chunk in LifiMsgEncoder._chunker(bin_msg, 8)]
+        # Not going to use preamble and parity for now.
+        #return [helper(chunk) for chunk in LifiMsgEncoder._chunker(bin_msg, 8)]
+        return [chunk for chunk in LifiMsgEncoder._chunker(bin_msg, 8)]
 
 
     def _chunker(seq, size):

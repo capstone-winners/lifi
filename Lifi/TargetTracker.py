@@ -3,6 +3,7 @@ import cv2
 from Lifi.HistoryInterpreter import HistoryInterpreter
 from Lifi.ShapeDetector import ShapeDetector
 from Lifi.CvHelpers import *
+from Lifi.GlobalSettings import *
 
 class TargetTracker:
 
@@ -35,8 +36,9 @@ class TargetTracker:
         self.trackers = [self.greentracker, self.redtracker, self.bluetracker]
 
         self.history = TargetHistory(self.complete_frame_callback)
-
-        self.fpm = 72 # The number of frames we expect each message to take
+        
+        # The number of frames we expect each message to take
+        self.fpm = FRAME_SIZE * BUFFER_SIZE 
         self.frame_count = 0
         self.last_detected = 0
         self.detected_frame = False
@@ -44,13 +46,17 @@ class TargetTracker:
 
     def track(self, frame):
         markup_frame = frame.copy()
-
+        found_target = False
         for tracker in self.trackers:
             detected, box = tracker.track(frame, markup_frame)
             tracker.show_mask()
             if detected:
                 #print("{}\t{}".format(tracker.name, box))
                 self.history.add_to_history(detected, box)
+                found_target = True
+
+        if not found_target:
+            self.history.record_no_detection()
 
         self.frame_count += 1
         if (self.frame_count - self.last_detected) % (self.fpm * 3) == 0:
@@ -66,7 +72,7 @@ class TargetTracker:
     def _add_message_to_frame(self, frame):
         print(self.frame_count)
         if self.detected_frame:
-            msg = "{}: {}".format(self.detected_frame, str(self.bin_message))
+            msg = "{}: {}".format(self.last_detected, str(self.bin_message))
         else:
             msg = "No msg detected"
         
@@ -223,9 +229,14 @@ class TargetHistory():
         self.history = list(filter(lambda entry: entry["last_frame"] != self.frame, 
                 self.history))
 
+    def record_no_detection(self):
+        for entry in self.history:
+            entry["history_interpreter"].process("missing")
+            entry["history"].append("missing")
+
     def _create_history_entry(self, detected, box): 
-        interp = HistoryInterpreter(self.frame_complete_callback)
-        interp.max_buffer_size = 8
+        interp = HistoryInterpreter(self.frame_complete_callback, str(box))
+        interp.max_buffer_size = BUFFER_SIZE
         interp.process(detected)
         return {"last_pos": box,
                 "last_frame": self.frame,
