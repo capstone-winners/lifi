@@ -67,3 +67,9 @@ def bin_list_to_int(bin_list):
 def argmax(l):
     f = lambda i: l[i]
     return max(range(len(l)), key=f)
+
+def first(iterable, condition = lambda x: True):
+    try:
+        return next(x for x in iterable if condition(x))
+    except StopIteration:
+        return iterable[0]

@@ -67,7 +67,7 @@ class TransmissionWindow(QMainWindow):
     def drawRect(self, event, qp):
         qp.setPen(QPen(Qt.black,  5, Qt.SolidLine))
         qp.setBrush(QBrush(self.color, Qt.SolidPattern))
-        qp.drawRect(40, 40, 400, 200)
+        qp.drawRect(40, 40, 200, 200)
 
     def set_pixels(self, color):
         self.color = QColor.fromRgb(*(color[0][0]))

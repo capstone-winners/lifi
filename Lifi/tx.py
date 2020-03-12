@@ -27,6 +27,7 @@ class LifiTx:
         print(bin_msg)
         color_sequence = self._frames_to_colors(bin_msg)
         print(color_sequence)
+        print("Tx frequency: {}".format(self.tx_frequency))
         
         while(True):
             for color in color_sequence:

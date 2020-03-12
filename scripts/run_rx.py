@@ -37,7 +37,7 @@ def main():
     frame = get_frame(vid_stream, stream)
     height, width = frame.shape[0], frame.shape[1]
     # Frame writer
-    out = cv2.VideoWriter('outpy.mp4',cv2.VideoWriter_fourcc(*"MP4V"), 
+    out = cv2.VideoWriter('outpy.mp4',cv2.VideoWriter_fourcc(*"mp4v"), 
             fps, (width,height))
     print(fps)
 
