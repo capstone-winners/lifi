@@ -298,9 +298,9 @@ class TargetHistory():
         # Increment the frame count and wrap at the max_frames_to_live.
         self.frame = (self.frame + 1) % self.max_frames_to_live
         
-        #
         def is_not_missing(entry):
-            return entry["history"][-self.max_frames_to_live:].count("missing") != self.max_frames_to_live,
+            count_missing = entry["history"][-self.max_frames_to_live:].count("missing")
+            return count_missing != self.max_frames_to_live
 
         # Remove any entries which we haven't seen since the frame wrap around.
         self.history = list(filter(is_not_missing, self.history))
