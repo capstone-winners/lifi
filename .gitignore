@@ -4,3 +4,4 @@ venv
 .DS_Store
 mov_test_240_fps
 **.avi
+**.pyc
