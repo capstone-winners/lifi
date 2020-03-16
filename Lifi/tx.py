@@ -39,13 +39,19 @@ class LifiTx:
 
     def _sleep_frequency(self):
         """ Sleeps for enough time to blink at the desired frequency """
-
-        time.sleep(1.0/LifiTx.tx_frequency)
+        self._sleep_helper(LifiTx.tx_frequency)
     
     def _sleep_phase_shift(self):
         """ Sleeps for enough time shift the blink frequency """
+        self._sleep_helper(LifiTx.shift_frequency)
 
-        time.sleep(1.0/LifiTx.shift_frequency)
+    def _sleep_helper(self, freq):
+        elapsed_s = (time.time_ns() - self.t_start)/(10**9)
+        t_sleep = (1.0/freq) - elapsed_s
+        #print("Target: {}\n\tlost: {}\n\tadjusted: {}\n\tframe_rate: {}".format(
+        #    1.0/freq, elapsed_s, t_sleep, 1.0/240))
+
+        time.sleep(t_sleep)
 
     def _get_color_config(self, rgb):
         """ Get a color configuration for the entire 8x8 grid """
@@ -60,7 +66,7 @@ class LifiTx:
 
     def _display_color(self, rgb):
         """ Changes the entire 8x8 grid to the given color """
-
+        self.t_start = time.time_ns()
         self.display().set_pixels(self._get_color_config(rgb))
         self.display().show_colors()
 
