@@ -34,7 +34,7 @@ class ShapeDetector:
             # 
             # a square will have an aspect ratio that is approximately
             # equal to one, otherwise, the shape is a rectangle
-            if ar >= 0.75 and ar <= 1.25:
+            if ar >= 0.70 and ar <= 1.30:
                 shape = "target" 
             else:
                 shape = "zzz_rectangle " + str(ar)
