@@ -38,7 +38,7 @@ def main():
     height, width = frame.shape[0], frame.shape[1]
     # Frame writer
     out = cv2.VideoWriter('outpy.mp4',cv2.VideoWriter_fourcc(*"mp4v"), 
-            fps, (width,height))
+            240, (width,height))
     print(fps)
 
     paused = False
