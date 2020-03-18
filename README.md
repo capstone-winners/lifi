@@ -27,7 +27,7 @@ There may be some other requirements for getting QT5 working on your machine...
 `python scripts/run_pyqt_tx.py`
 
 ### Unicorn PiHat Tx
-`python scripts/run_tx.py`
+`sudo python3 scripts/run_tx.py`
 
 ### Receiving (Prototype)
 For the time being, this prototype is being developed on recorded videos.
