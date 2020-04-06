@@ -82,5 +82,8 @@ For the time being, this prototype is being developed on recorded videos.
 3. Upload video to your computer
 4. `python scripts/run_rx.py -v <path to video>`
 
+## Future Work
+- improving speed and robustness
+- error detection/correction
 
 [ar-repo]: https://github.com/capstone-winners/frontend_ar/tree/master/cap/LifiDetector
