@@ -3,6 +3,8 @@
 The moonshot of moonshots. Let's see if we can get this to work...
 If this works we'll actually have a pretty frickin cool project.
 
+![running-rx](figures/running-rx.gif)
+
 ## Overview
 This repo consists of two main components - transmission (tx) and reception
 (rx). The transmission code is written in a modular fashion to allow tx through
@@ -52,7 +54,7 @@ Detection works as follows.
 When running on the Raspberry Pi, the following setup was used. The paper towel
 diffuser is important to turn the light into single shaped target. 
 
-![tx](figures/lifi-tx.png)
+![tx](figures/tx-box.png)
 
 ## Setup
 (Preferably in a venv, using Python3.6.5) 
