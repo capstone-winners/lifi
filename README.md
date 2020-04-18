@@ -50,7 +50,7 @@ Detection works as follows.
   - this is a new target. start tracking the history
 - Remove any target that we haven't seen in a while from the tracked history
 
-## Transmistter Setup
+## Transmitter Setup
 When running on the Raspberry Pi, the following setup was used. The paper towel
 diffuser is important to turn the light into single shaped target. 
 
